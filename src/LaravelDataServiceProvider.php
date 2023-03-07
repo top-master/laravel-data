@@ -41,11 +41,16 @@ class LaravelDataServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
-        $enableVarDumperCaster = match (config('data.var_dumper_caster_mode')) {
-            'enabled' => true,
-            'development' => $this->app->environment('local', 'testing'),
-            default => false,
-        };
+        switch (config('data.var_dumper_caster_mode')) {
+            case 'enabled':
+                $enableVarDumperCaster = true;
+                break;
+            case 'development':
+                $enableVarDumperCaster = $this->app->environment('local', 'testing');
+                break;
+            default:
+                $enableVarDumperCaster = false;
+        }
 
         if ($enableVarDumperCaster) {
             (new VarDumperManager())->initialize();
